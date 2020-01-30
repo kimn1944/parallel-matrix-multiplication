@@ -60,8 +60,9 @@ void io(int argc, char **argv) {
     int size = ROW * COL;
     MAT_PTR = (int*)malloc(size * sizeof(int)); 
     RESULT = (int*)malloc(size * sizeof(int));
-    for (int i = 0; i < ROW; i++) {
-	for (int j = 0; j < COL; j++) {
+    int i, j;
+    for (i = 0; i < ROW; i++) {
+	for (j = 0; j < COL; j++) {
 	    fscanf(fptr, "%d", MAT_PTR + i * COL + j);
 	} 
     }
@@ -73,7 +74,8 @@ void multi_thread(int thread_num) {
     int step = ROW / thread_num;
     struct mult_runner_struct threads [thread_num];
     pthread_t tids[thread_num];
-    for (int i = 0; i < thread_num; i++) {
+    int i;
+    for (i = 0; i < thread_num; i++) {
 	threads[i].start = index;
 	threads[i].end = index + step;
 	index += step;
@@ -84,7 +86,7 @@ void multi_thread(int thread_num) {
 	pthread_attr_init(&attr);
 	pthread_create(&tids[i], &attr, mult_runner, &threads[i]);  
     }
-    for (int i = 0; i < thread_num; i++) {
+    for (i = 0; i < thread_num; i++) {
 	pthread_join(tids[i], NULL);
     }	
 }
@@ -98,8 +100,9 @@ void result_to_file(int num, int duration) {
     fprintf(fptr, "Multithreading with %d threads took: %d seconds\n", num, duration);
     fprintf(fptr, "Resulting matrix:\n");
     fprintf(fptr, "%dx%d\n", ROW, COL);
-    for (int i = 0; i < ROW; i++) {
-	for (int j = 0; j < COL; j++) {
+    int i, j;
+    for (i = 0; i < ROW; i++) {
+	for (j = 0; j < COL; j++) {
 	    fprintf(fptr, "%d ", *(RESULT + i * COL + j));
 	}
 	fprintf(fptr, "\n");
@@ -108,8 +111,9 @@ void result_to_file(int num, int duration) {
 }
 
 void print_mat(int *mat_ptr, int row, int col) { 
-    for (int i = 0; i < row; i++) {
-	for (int j = 0; j < col; j++) {
+    int i, j;
+    for (i = 0; i < row; i++) {
+	for (j = 0; j < col; j++) {
 	    printf("%d ", *(mat_ptr + i * col + j));
 	}
 	printf("\n");
@@ -117,10 +121,11 @@ void print_mat(int *mat_ptr, int row, int col) {
 }
 
 void mat_square(int *mat_ptr, int row, int col, int *result) {
-    for (int i = 0; i < row; i++) {
-	for (int j = 0; j < col; j++) {
+    int i, j, k;
+    for (i = 0; i < row; i++) {
+	for (j = 0; j < col; j++) {
 	    *(result + i * col + j) = 0;
-	    for (int k = 0; k < row; k++) {
+	    for (k = 0; k < row; k++) {
 		*(result + i * col + j) += *(mat_ptr + i * col + k) * *(mat_ptr + k * col + j);
 	    }
 	}
@@ -134,11 +139,11 @@ void debug() {
 
 void* mult_runner(void *arg) {
     struct mult_runner_struct *struct_ptr = (struct mult_runner_struct*) arg;
-
-    for (int i = struct_ptr->start; i < struct_ptr->end; i++) {
-	for (int j = 0; j < COL; j++) {
+    int i, j, k;
+    for (i = struct_ptr->start; i < struct_ptr->end; i++) {
+	for (j = 0; j < COL; j++) {
 	    *(RESULT + i * COL + j) = 0;
-	    for (int k = 0; k < COL; k++) {
+	    for (k = 0; k < COL; k++) {
 		*(RESULT + i * COL + j) += *(MAT_PTR + i * COL + k)
 		    * *(MAT_PTR + k * COL + j); 
 	    } 

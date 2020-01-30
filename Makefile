@@ -1,5 +1,5 @@
 main : main.c
-	gcc main.c -o main
+	gcc -pthread -o main main.c
 
 clean :
 	rm ./main
