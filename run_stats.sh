@@ -1,15 +1,15 @@
 #!/bin/bash
 
-filename="mat200x200.txt"
-#filename="mat4000x4000.txt"
-thread_max=5
-run_num=5
+#filename="mat200x200.txt"
+filename="mat4000x4000.txt"
+thread_max=32
+run_num=2
 
 make
 echo "Statistics for the parallel matrix multiplication." > stats.txt
 echo "Each calculation will be repeated $run_num times and with up to $thread_max threads" >> stats.txt
 
-for ((i=1; i<=$thread_max; i++))
+for ((i=1; i<=$thread_max; i *= 2))
 do 
     sum=0
     for ((j=1; j<=$run_num; j++))
