@@ -18,8 +18,8 @@ int COL = 0;
 int bug = 0;
 
 struct mult_runner_struct {
-    int start;
-    int end;
+    int thread_num;
+    int index;
 };
 
 
@@ -70,18 +70,12 @@ void io(int argc, char **argv) {
 }
 
 void multi_thread(int thread_num) {
-    int index = 0;
-    int step = ROW / thread_num;
     struct mult_runner_struct threads [thread_num];
     pthread_t tids[thread_num];
     int i;
     for (i = 0; i < thread_num; i++) {
-	threads[i].start = index;
-	threads[i].end = index + step;
-	index += step;
-	if (i == thread_num - 1) {
-	    threads[i].end = ROW;
-	}
+	threads[i].index = i;
+	threads[i].thread_num = thread_num;
 	pthread_attr_t attr;
 	pthread_attr_init(&attr);
 	pthread_create(&tids[i], &attr, mult_runner, &threads[i]);  
@@ -139,9 +133,11 @@ void debug() {
 
 void* mult_runner(void *arg) {
     struct mult_runner_struct *struct_ptr = (struct mult_runner_struct*) arg;
+    int index = struct_ptr->index;
+    int thread_num = struct_ptr->thread_num;
     int i, j, k;
-    for (i = struct_ptr->start; i < struct_ptr->end; i++) {
-	for (j = 0; j < COL; j++) {
+    for (i = 0; i < ROW; i++) {
+	for (j = index; j < COL; j += thread_num) {
 	    *(RESULT + i * COL + j) = 0;
 	    for (k = 0; k < COL; k++) {
 		*(RESULT + i * COL + j) += *(MAT_PTR + i * COL + k)
