@@ -2,7 +2,7 @@
 The following program demostrates a multithreaded application executing matrix multipilcation.
 
 You can test the program by running make and then the executable file called main in the following fashion:  
->make
+>make  
 >./main <number of threads> <filename>  
 
 The execution time and the result can be found in the result.txt file.
