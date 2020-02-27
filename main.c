@@ -1,7 +1,10 @@
 #include "mpi.h"
 #include <stdio.h>
 #include <stdlib.h>
-#define  MASTER	    0
+#define MASTER 0
+#define FROM_MASTER 0
+#define	FROM_WORKER 1
+
 
 int main (int argc, char *argv[]) {
     int   numtasks, taskid;
