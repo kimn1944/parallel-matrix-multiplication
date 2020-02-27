@@ -1,0 +1,11 @@
+#!/bin/bash
+MPIRUN=/usr/lib/mpich/bin/mpirun
+if [ ! -f $MPIRUN ]; then
+	printf "Incorrect mpi path, $MPIRUN\n"
+	exit
+fi
+HOSTS="mnemosyne"
+#HOSTS="mnemosyne,gauss,laplace,edisonlab"
+NODES=4
+
+$MPIRUN -host $HOSTS -np $NODES ./a.out
