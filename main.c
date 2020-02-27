@@ -51,7 +51,7 @@ void result_to_file() {
 	exit(0);
     }
     fprintf(fptr, "Resulting matrix:\n");
-    fprintf(fptr, "%dx%d", ROW, COL);
+    fprintf(fptr, "%dx%d\n", ROW, COL);
     int i, j;
     for (i = 0; i < ROW; i++) {
 	for (j = 0; j < COL; j++) {
@@ -77,6 +77,7 @@ int main(int argc, char *argv[]) {
     
     if (taskid == MASTER) {
 	io(argc, argv);
+	result_to_file();
 	average = COL / (numtasks - 1);
 	modulo = COL % (numtasks - 1);
 	offset = 0;
@@ -87,7 +88,7 @@ int main(int argc, char *argv[]) {
 	    MPI_Send(&rows, 1, MPI_INT, destination, msg_type, MPI_COMM_WORLD);
 	    MPI_Send(&offset, 1, MPI_INT, destination, msg_type, 
 		    MPI_COMM_WORLD);
-	    MPI_Send(&MAT_PTR[offset * COL], rows * COL, MPI_INT, destination, 
+	    MPI_Send(MAT_PTR, COL * COL, MPI_INT, destination,
 		    msg_type, MPI_COMM_WORLD);
 	    offset += rows;
 	}
@@ -98,7 +99,7 @@ int main(int argc, char *argv[]) {
 		    &status);    
 	    MPI_Recv(&offset, 1, MPI_INT, source, msg_type, MPI_COMM_WORLD, 
 		    &status);
-	    MPI_Recv(&RESULT[offset * COL], rows * COL, MPI_INT, source, 
+	    MPI_Recv((RESULT + offset * COL), rows * COL, MPI_INT, source, 
 		    msg_type, MPI_COMM_WORLD, &status);
 	}
 	result_to_file();
@@ -109,8 +110,7 @@ int main(int argc, char *argv[]) {
 	MPI_Recv(&rows, 1, MPI_INT, MASTER, msg_type, MPI_COMM_WORLD, &status);
 	MPI_Recv(&offset, 1, MPI_INT, MASTER, msg_type, MPI_COMM_WORLD,
 	       	&status);
-	pass(offset);
-	MPI_Recv(&MAT_PTR, rows * COL, MPI_INT, MASTER, msg_type, 
+	MPI_Recv(MAT_PTR, COL * COL, MPI_INT, MASTER, msg_type, 
 		MPI_COMM_WORLD, &status);
 
 	int i, j, k;
@@ -127,7 +127,8 @@ int main(int argc, char *argv[]) {
 	msg_type = FROM_WORKER;
 	MPI_Send(&rows, 1, MPI_INT, MASTER, msg_type, MPI_COMM_WORLD);
 	MPI_Send(&offset, 1, MPI_INT, MASTER, msg_type, MPI_COMM_WORLD);
-	MPI_Send(&RESULT, 1, MPI_INT, MASTER, msg_type, MPI_COMM_WORLD);
+	MPI_Send(RESULT, rows * COL, MPI_INT, MASTER, msg_type, 
+		MPI_COMM_WORLD);
     }
 
     MPI_Finalize();
